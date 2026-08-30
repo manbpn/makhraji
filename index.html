@@ -293,6 +293,7 @@
 
       <div class="stage-actions">
         <button class="btn btn-ghost" id="listen-example-btn">Dengarkan contoh</button>
+        <button class="btn btn-ghost" id="next-sentence-btn">🔀 Kalimat lain</button>
       </div>
 
       <div class="mic-zone">
@@ -344,38 +345,62 @@ const CATEGORIES = [
   {
     id:'x', label:'Kelas X',
     topics:[
-      { id:1, topic:'الوحدة الأولى: التعارف — Perkenalan', focus:'ع / ء', text:'اسْمِي أَحْمَدُ، وَمَا اسْمُكَ؟' },
-      { id:2, topic:'الوحدة الثانية: الأسرة والبيت — Keluarga', focus:'ه / ب', text:'هَذَا أَبِي، اسْمُهُ إِبْرَاهِيمُ' },
-      { id:3, topic:'الوحدة الثالثة: المدرسة — Sekolah', focus:'ح / ص', text:'كَمْ حِصَّةً نَدْرُسُ الْيَوْمَ؟' },
-      { id:4, topic:'الوحدة الرابعة: الهواية — Hobi', focus:'ه / ج', text:'مَا هِوَايَةُ أَحْمَدَ مُجَاهِدٍ؟' },
-      { id:5, topic:'الوحدة الخامسة: المهنة — Profesi', focus:'ط / ك', text:'أُرِيدُ أَنْ أَكُونَ طَبِيبًا' },
-      { id:6, topic:'الوحدة السادسة: الحياة اليومية — Kehidupan sehari-hari', focus:'ق / ص', text:'أَقُومُ مِنَ النَّوْمِ صَبَاحًا بَاكِرًا' },
+      { id:1, topic:'الوحدة الأولى: التعارف — Perkenalan', focus:'ع / ء', texts:['اسْمِي أَحْمَدُ، وَمَا اسْمُكَ؟'] },
+      { id:2, topic:'الوحدة الثانية: الأسرة والبيت — Keluarga', focus:'ه / ب', texts:['هَذَا أَبِي، اسْمُهُ إِبْرَاهِيمُ'] },
+      { id:3, topic:'الوحدة الثالثة: المدرسة — Sekolah', focus:'ح / ص', texts:['كَمْ حِصَّةً نَدْرُسُ الْيَوْمَ؟'] },
+      { id:4, topic:'الوحدة الرابعة: الهواية — Hobi', focus:'ه / ج', texts:['مَا هِوَايَةُ أَحْمَدَ مُجَاهِدٍ؟'] },
+      { id:5, topic:'الوحدة الخامسة: المهنة — Profesi', focus:'ط / ك', texts:['أُرِيدُ أَنْ أَكُونَ طَبِيبًا'] },
+      { id:6, topic:'الوحدة السادسة: الحياة اليومية — Kehidupan sehari-hari', focus:'ق / ص', texts:['أَقُومُ مِنَ النَّوْمِ صَبَاحًا بَاكِرًا'] },
     ]
   },
   {
     id:'xi', label:'Kelas XI',
     topics:[
-      { id:7, topic:'الوحدة الأولى: السياحة — Wisata', focus:'ج / م', text:'مَا أَجْمَلَ هَذَا الْمَكَانَ؟' },
-      { id:8, topic:'الوحدة الثانية: الصحة — Kesehatan', focus:'ذ / ش', text:'هَلْ أَنْتَ تَذْهَبُ إِلَى الْمُسْتَشْفَى؟' },
-      { id:9, topic:'الوحدة الثالثة: الحج والعمرة — Haji dan umrah', focus:'ح / ج', text:'نَحْنُ قَرِيبُونَ مِنَ الْحَجَرِ الْأَسْوَدِ' },
-      { id:10, topic:'الوحدة الرابعة: الأديان في إندونيسيا — Agama di Indonesia', focus:'س / ش', text:'مَنْ تِلْكَ؟ تِلْكَ رَشِيدَةُ، هِيَ مُسْلِمَةٌ' },
+      { id:7, topic:'الوحدة الأولى: السياحة — Wisata', focus:'ج / م / س', texts:[
+        'مَا أَجْمَلَ هَذَا الْمَكَانَ؟',
+        'هَلْ سَبَقَ لَكَ الذَّهَابُ إِلَى سُومَطْرَا؟',
+        'غَارُ فِينْدُولْ جَمِيلٌ جِدًّا',
+        'أَحَبَّ يُوسُفُ السِّيَاحَةَ',
+        'سَافَرَ أَحْمَدُ فِي الْمَزَارِعِ'
+      ] },
+      { id:8, topic:'الوحدة الثانية: الصحة — Kesehatan', focus:'ذ / ش / ص', texts:[
+        'هَلْ أَنْتَ تَذْهَبُ إِلَى الْمُسْتَشْفَى؟',
+        'تَذْهَبُ حَمِيدَةُ إِلَى الْمُسْتَشْفَى',
+        'الطَّبِيبُ يَفْحَصُ الْمَرْضَى فِي الْمُسْتَشْفَى',
+        'يَجِبُ عَلَى النَّاسِ مُمَارَسَةُ الرِّيَاضَةِ',
+        'السِّبَاحَةُ رِيَاضَةٌ نَافِعَةٌ لِلصِّحَّةِ'
+      ] },
+      { id:9, topic:'الوحدة الثالثة: الحج والعمرة — Haji dan umrah', focus:'ح / ج / ط', texts:[
+        'نَحْنُ قَرِيبُونَ مِنَ الْحَجَرِ الْأَسْوَدِ',
+        'طَافَ الْمُسْلِمُونَ بِالْكَعْبَةِ الْمُشَرَّفَةِ',
+        'يَسْعَى الْمُسْلِمُونَ بَيْنَ الصَّفَا وَالْمَرْوَةِ',
+        'الْحَاجُّ يَقِفُ بِعَرَفَةَ',
+        'رَمَى الْحُجَّاجُ الْجَمَرَاتِ'
+      ] },
+      { id:10, topic:'الوحدة الرابعة: الأديان في إندونيسيا — Agama di Indonesia', focus:'س / ش / ص', texts:[
+        'مَنْ تِلْكَ؟ تِلْكَ رَشِيدَةُ، هِيَ مُسْلِمَةٌ',
+        'يُصَلِّي خَالِدٌ فِي الْمَسْجِدِ',
+        'الْإِسْلَامُ دِينٌ أَكْثَرُ انْتِشَارًا فِي إِنْدُونِيسِيَا',
+        'يَتَعَبَّدُ فَرَانْسِيسْكُوسْ فِي الْكَنِيسَةِ',
+        'خَالِدٌ تَاجِرٌ مُسْلِمٌ بَيْتُهُ قَرِيبٌ مِنَ الْمَسْجِدِ'
+      ] },
     ]
   },
   {
     id:'xii', label:'Kelas XII',
     topics:[
-      { id:11, topic:'الوحدة الأولى: تكنولوجيا الإعلام والاتصال — Teknologi', focus:'ق / ض', text:'قَضَيْتُ الْوَقْتَ بِالرِّيَاضَةِ مَعَ أَصْحَابِي' },
-      { id:12, topic:'الوحدة الثانية: عظماء الإسلام — Tokoh besar Islam', focus:'ح / ق', text:'مَنْ حَرَّرَ مَدِينَةَ الْقُدْسِ؟' },
-      { id:13, topic:'الوحدة الثالثة: الدراسة في الجامعة — Studi di universitas', focus:'ك / ش', text:'أُرِيدُ أَنْ أَدْرُسَ فِي كُلِّيَّةِ الشَّرِيعَةِ' },
+      { id:11, topic:'الوحدة الأولى: تكنولوجيا الإعلام والاتصال — Teknologi', focus:'ق / ض', texts:['قَضَيْتُ الْوَقْتَ بِالرِّيَاضَةِ مَعَ أَصْحَابِي'] },
+      { id:12, topic:'الوحدة الثانية: عظماء الإسلام — Tokoh besar Islam', focus:'ح / ق', texts:['مَنْ حَرَّرَ مَدِينَةَ الْقُدْسِ؟'] },
+      { id:13, topic:'الوحدة الثالثة: الدراسة في الجامعة — Studi di universitas', focus:'ك / ش', texts:['أُرِيدُ أَنْ أَدْرُسَ فِي كُلِّيَّةِ الشَّرِيعَةِ'] },
     ]
   },
   {
     id:'umum', label:'Percakapan Umum',
     topics:[
-      { id:14, topic:'التحية — Sapaan', focus:'ح / ك', text:'السَّلَامُ عَلَيْكُمْ، كَيْفَ حَالُكَ الْيَوْمَ؟' },
-      { id:15, topic:'السؤال عن الطريق — Bertanya arah', focus:'ع / ق', text:'عَفْوًا، أَيْنَ يَقَعُ الْمَسْجِدُ الْقَرِيبُ مِنْ هُنَا؟' },
-      { id:16, topic:'في المطعم — Di restoran', focus:'ط / ض', text:'أُرِيدُ طَبَقًا مِنَ الْأَرُزِّ وَكَأْسًا مِنَ الشَّايِ مِنْ فَضْلِكَ' },
-      { id:17, topic:'الوداع — Berpisah', focus:'ش / ج', text:'شُكْرًا جَزِيلًا عَلَى مُسَاعَدَتِكَ، إِلَى اللِّقَاءِ' },
+      { id:14, topic:'التحية — Sapaan', focus:'ح / ك', texts:['السَّلَامُ عَلَيْكُمْ، كَيْفَ حَالُكَ الْيَوْمَ؟'] },
+      { id:15, topic:'السؤال عن الطريق — Bertanya arah', focus:'ع / ق', texts:['عَفْوًا، أَيْنَ يَقَعُ الْمَسْجِدُ الْقَرِيبُ مِنْ هُنَا؟'] },
+      { id:16, topic:'في المطعم — Di restoran', focus:'ط / ض', texts:['أُرِيدُ طَبَقًا مِنَ الْأَرُزِّ وَكَأْسًا مِنَ الشَّايِ مِنْ فَضْلِكَ'] },
+      { id:17, topic:'الوداع — Berpisah', focus:'ش / ج', texts:['شُكْرًا جَزِيلًا عَلَى مُسَاعَدَتِكَ، إِلَى اللِّقَاءِ'] },
     ]
   },
 ];
@@ -568,13 +593,25 @@ function renderLevels(){
   });
 }
 
+let currentTextIndex = 0;
+
 function selectLevel(lv){
   currentLevel = lv;
+  currentTextIndex = 0;
   el('level-focus').innerHTML = lv.topic + ' &nbsp;·&nbsp; Fokus huruf: <b>' + lv.focus + '</b>';
-  el('stage-text').textContent = lv.text;
+  el('stage-text').textContent = lv.texts[currentTextIndex];
   el('transcript-box').textContent = '—';
   el('feedback-block').classList.add('hidden');
+  el('next-sentence-btn').style.display = lv.texts.length > 1 ? 'inline-block' : 'none';
   renderLevels();
+}
+
+function nextSentence(){
+  if(!currentLevel || currentLevel.texts.length <= 1) return;
+  currentTextIndex = (currentTextIndex + 1) % currentLevel.texts.length;
+  el('stage-text').textContent = currentLevel.texts[currentTextIndex];
+  el('transcript-box').textContent = '—';
+  el('feedback-block').classList.add('hidden');
 }
 
 function speakExample(){
@@ -582,7 +619,7 @@ function speakExample(){
     alert('Browser ini tidak mendukung suara contoh otomatis.');
     return;
   }
-  const utter = new SpeechSynthesisUtterance(currentLevel.text);
+  const utter = new SpeechSynthesisUtterance(currentLevel.texts[currentTextIndex]);
   utter.lang = 'ar-SA';
   utter.rate = 0.8;
   window.speechSynthesis.cancel();
@@ -630,7 +667,7 @@ function setupRecognition(){
 }
 
 async function handleFinalTranscript(transcript){
-  const pct = similarityScore(currentLevel.text, transcript);
+  const pct = similarityScore(currentLevel.texts[currentTextIndex], transcript);
   const tier = scoreTier(pct);
   showFeedback(pct, tier);
   await recordAttempt(pct, tier);
@@ -728,6 +765,7 @@ async function resetMyData(){
 el('save-name-btn').addEventListener('click', saveProfileAndStart);
 el('name-input').addEventListener('keydown', (e) => { if(e.key === 'Enter') saveProfileAndStart(); });
 el('listen-example-btn').addEventListener('click', speakExample);
+el('next-sentence-btn').addEventListener('click', nextSentence);
 el('reset-btn').addEventListener('click', resetMyData);
 el('mic-btn').addEventListener('click', () => {
   if(!recognition) return;
