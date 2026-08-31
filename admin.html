@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Panel Admin — Uji Makhraj Digital</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-deep:#102E2A; --bg-panel:#173B36; --bg-panel-2:#1E4A43;
+    --gold:#D4AF37; --gold-soft:#E9CB74; --ivory:#F4EEDD; --ivory-dim:#C9C2AC;
+    --brick:#C1443B; --teal:#3FA98A; --radius:12px;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg-deep);color:var(--ivory);font-family:'Inter',sans-serif;padding:28px 16px 60px;}
+  .wrap{max-width:900px;margin:0 auto;}
+  h1{font-family:'Fraunces',serif;font-weight:600;font-size:1.5rem;color:var(--gold-soft);margin:0 0 4px;}
+  .sub{color:var(--ivory-dim);font-size:0.88rem;margin:0 0 24px;}
+  .card{background:var(--bg-panel);border:1px solid rgba(212,175,55,0.18);border-radius:16px;padding:20px 22px;margin-bottom:20px;}
+  .field-input{width:100%;background:var(--bg-panel-2);border:1px solid rgba(244,238,221,0.2);color:var(--ivory);padding:11px 14px;border-radius:var(--radius);font-size:0.95rem;margin-bottom:10px;}
+  .btn{border:none;cursor:pointer;font-weight:600;border-radius:var(--radius);padding:10px 18px;font-size:0.9rem;}
+  .btn-gold{background:var(--gold);color:#241B04;}
+  .btn-gold:hover{background:var(--gold-soft);}
+  .btn-danger{background:var(--brick);color:var(--ivory);}
+  .btn-danger:hover{opacity:0.85;}
+  .btn-ghost{background:transparent;border:1px solid rgba(244,238,221,0.3);color:var(--ivory);}
+  .hidden{display:none!important;}
+  .auth-error{font-size:0.82rem;color:#F0B4AE;background:rgba(193,68,59,0.15);border:1px solid rgba(193,68,59,0.4);border-radius:var(--radius);padding:9px 12px;margin-bottom:10px;display:none;}
+  .auth-error.show{display:block;}
+  table{width:100%;border-collapse:collapse;font-size:0.86rem;}
+  th{text-align:left;color:var(--ivory-dim);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.04em;padding:8px;border-bottom:1px solid rgba(244,238,221,0.15);}
+  td{padding:9px 8px;border-bottom:1px solid rgba(244,238,221,0.08);vertical-align:middle;}
+  .role-tag{font-size:0.68rem;padding:2px 8px;border-radius:999px;font-weight:700;text-transform:uppercase;}
+  .role-siswa{background:var(--teal);color:#0B211C;}
+  .role-umum{background:var(--gold);color:#241B04;}
+  .row-actions{display:flex;gap:6px;flex-wrap:wrap;}
+  .row-actions button{padding:5px 10px;font-size:0.76rem;}
+  .top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:8px;}
+  .who{font-size:0.86rem;color:var(--ivory-dim);}
+  .search-box{width:100%;max-width:320px;}
+  .empty-note{color:var(--ivory-dim);font-size:0.85rem;padding:10px 0;}
+  .bootstrap-note{font-size:0.8rem;color:var(--ivory-dim);background:rgba(212,175,55,0.08);border:1px dashed rgba(212,175,55,0.35);border-radius:var(--radius);padding:12px 14px;line-height:1.6;}
+  .bootstrap-note code{background:rgba(0,0,0,0.25);padding:2px 6px;border-radius:4px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Panel Admin</h1>
+  <p class="sub">Uji Makhraj Digital — pantau hasil siswa &amp; kelola akun pengguna</p>
+
+  <!-- LOGIN ADMIN -->
+  <div id="admin-login-card" class="card">
+    <div class="auth-error" id="login-error"></div>
+    <p class="sub" style="margin-bottom:14px;">Masuk dengan akun Google yang sudah didaftarkan sebagai admin.</p>
+    <button class="btn btn-gold" id="admin-google-btn">Masuk dengan Google</button>
+  </div>
+
+  <!-- BELUM TERDAFTAR SEBAGAI ADMIN -->
+  <div id="not-admin-card" class="card hidden">
+    <p><b>Akun ini belum terdaftar sebagai admin.</b></p>
+    <p class="bootstrap-note">
+      UID akun Google-mu: <code id="my-uid">—</code><br><br>
+      Untuk menjadikan akun ini admin, buka <b>Firebase Console → Realtime Database</b> pada project
+      <code>arabic-class-manbpn</code>, lalu tambahkan data baru di path:<br>
+      <code>admins/&lt;UID di atas&gt;</code> dengan nilai <code>true</code>.<br><br>
+      Setelah itu, muat ulang halaman ini dan masuk kembali.
+    </p>
+    <button class="btn btn-ghost" id="admin-logout-btn2">Keluar</button>
+  </div>
+
+  <!-- DASHBOARD ADMIN -->
+  <div id="dashboard" class="hidden">
+    <div class="top-bar">
+      <span class="who">Masuk sebagai admin: <b id="admin-name-display"></b></span>
+      <button class="btn btn-ghost" id="admin-logout-btn">Keluar</button>
+    </div>
+
+    <div class="card">
+      <input class="field-input search-box" id="search-input" type="text" placeholder="Cari nama / NISN..." />
+      <table>
+        <thead>
+          <tr><th>Nama</th><th>Peran</th><th>NISN</th><th>Skor terbaik</th><th>Poin</th><th>Percobaan</th><th>Aksi</th></tr>
+        </thead>
+        <tbody id="user-table-body"></tbody>
+      </table>
+      <p class="empty-note hidden" id="empty-note">Belum ada data pengguna.</p>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyDDi8odiYL0h2xCsghfNr1EdGd8wXVfidY",
+  authDomain: "arabic-class-manbpn.firebaseapp.com",
+  databaseURL: "https://makhraji-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "arabic-class-manbpn",
+  storageBucket: "arabic-class-manbpn.firebasestorage.app",
+  messagingSenderId: "82009627923",
+  appId: "1:82009627923:web:143877e1c45fcd861c4ee6"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const rtdb = firebase.database();
+const el = (id) => document.getElementById(id);
+
+let allUsers = {}; // uid -> {role, nama, nisn}
+let allLeaderboard = {}; // uid -> {bestPct, totalPoints, attempts}
+
+el('admin-google-btn').addEventListener('click', async () => {
+  el('login-error').classList.remove('show');
+  try{
+    const provider = new firebase.auth.GoogleAuthProvider();
+    await auth.signInWithPopup(provider);
+  }catch(err){
+    el('login-error').textContent = 'Gagal masuk: ' + (err.message || err.code);
+    el('login-error').classList.add('show');
+  }
+});
+
+function logoutAll(){ auth.signOut(); }
+el('admin-logout-btn').addEventListener('click', logoutAll);
+el('admin-logout-btn2').addEventListener('click', logoutAll);
+
+auth.onAuthStateChanged(async (user) => {
+  el('admin-login-card').classList.add('hidden');
+  el('not-admin-card').classList.add('hidden');
+  el('dashboard').classList.add('hidden');
+
+  if(!user){
+    el('admin-login-card').classList.remove('hidden');
+    return;
+  }
+
+  let isAdmin = false;
+  try{
+    const snap = await rtdb.ref('admins/' + user.uid).get();
+    isAdmin = snap.exists() && snap.val() === true;
+  }catch(e){ isAdmin = false; }
+
+  if(!isAdmin){
+    el('my-uid').textContent = user.uid;
+    el('not-admin-card').classList.remove('hidden');
+    return;
+  }
+
+  el('admin-name-display').textContent = user.displayName || user.email;
+  el('dashboard').classList.remove('hidden');
+  loadDashboard();
+});
+
+async function loadDashboard(){
+  const [usersSnap, lbSnap] = await Promise.all([
+    rtdb.ref('users').get(),
+    rtdb.ref('leaderboard').get()
+  ]);
+  allUsers = usersSnap.exists() ? usersSnap.val() : {};
+  allLeaderboard = lbSnap.exists() ? lbSnap.val() : {};
+  renderTable();
+}
+
+function renderTable(filter){
+  filter = (filter || '').toLowerCase().trim();
+  const tbody = el('user-table-body');
+  tbody.innerHTML = '';
+  const uids = Object.keys(allUsers);
+  let shown = 0;
+
+  uids.forEach(uid => {
+    const u = allUsers[uid] || {};
+    const lb = allLeaderboard[uid] || {};
+    const haystack = ((u.nama||'') + ' ' + (u.nisn||'')).toLowerCase();
+    if(filter && !haystack.includes(filter)) return;
+    shown++;
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${escapeHtml(u.nama || '-')}</td>
+      <td><span class="role-tag ${u.role === 'siswa' ? 'role-siswa' : 'role-umum'}">${u.role || '-'}</span></td>
+      <td>${escapeHtml(u.nisn || '-')}</td>
+      <td>${lb.bestPct != null ? lb.bestPct + '%' : '-'}</td>
+      <td>${lb.totalPoints != null ? lb.totalPoints : '-'}</td>
+      <td>${lb.attempts != null ? lb.attempts : '-'}</td>
+      <td class="row-actions">
+        <button class="btn btn-ghost" data-act="edit-nama" data-uid="${uid}">Ubah nama</button>
+        <button class="btn btn-danger" data-act="reset-score" data-uid="${uid}">Reset skor</button>
+        <button class="btn btn-danger" data-act="hapus-akun" data-uid="${uid}">Hapus akun</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  el('empty-note').classList.toggle('hidden', shown > 0);
+}
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+}
+
+el('search-input').addEventListener('input', (e) => renderTable(e.target.value));
+
+el('user-table-body').addEventListener('click', async (e) => {
+  const btn = e.target.closest('button[data-act]');
+  if(!btn) return;
+  const uid = btn.dataset.uid;
+  const act = btn.dataset.act;
+  const u = allUsers[uid] || {};
+
+  if(act === 'edit-nama'){
+    const baru = prompt('Nama baru untuk ' + (u.nama || uid) + ':', u.nama || '');
+    if(baru && baru.trim()){
+      await rtdb.ref('users/' + uid + '/nama').set(baru.trim());
+      await rtdb.ref('leaderboard/' + uid + '/name').set(baru.trim());
+      await loadDashboard();
+    }
+  }
+  if(act === 'reset-score'){
+    if(!confirm('Reset seluruh riwayat & skor leaderboard untuk ' + (u.nama || uid) + '?')) return;
+    await rtdb.ref('kalam_history/' + uid).remove();
+    await rtdb.ref('leaderboard/' + uid).remove();
+    await loadDashboard();
+  }
+  if(act === 'hapus-akun'){
+    if(!confirm('Hapus data akun ' + (u.nama || uid) + ' dari sistem? (Akun login Firebase Auth-nya sendiri perlu dihapus manual lewat Firebase Console > Authentication jika ingin NISN/emailnya bisa didaftarkan ulang)')) return;
+    await rtdb.ref('users/' + uid).remove();
+    await rtdb.ref('kalam_history/' + uid).remove();
+    await rtdb.ref('leaderboard/' + uid).remove();
+    await loadDashboard();
+  }
+});
+</script>
+</body>
+</html>
