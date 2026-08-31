@@ -64,18 +64,52 @@
     margin-bottom:22px;
   }
 
-  .profile-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
-  .profile-row input{
-    flex:1;min-width:180px;
-    background:var(--bg-panel-2);
-    border:1px solid rgba(244,238,221,0.2);
-    color:var(--ivory);
-    padding:11px 14px;
-    border-radius:var(--radius-md);
-    font-size:0.95rem;
-    font-family:'Inter',sans-serif;
+  /* ===== LOGIN GATE ===== */
+  .auth-tabs{display:flex;gap:8px;margin-bottom:18px;}
+  .auth-tab{
+    flex:1;text-align:center;padding:11px 10px;border-radius:var(--radius-md);
+    background:var(--bg-panel-2);border:1px solid rgba(212,175,55,0.2);
+    cursor:pointer;font-weight:600;font-size:0.9rem;color:var(--ivory-dim);
   }
-  .profile-row input::placeholder{color:var(--ivory-dim);}
+  .auth-tab.active{background:var(--gold);color:#241B04;border-color:var(--gold);}
+  .auth-panel{display:none;}
+  .auth-panel.show{display:block;}
+  .field-label{font-size:0.8rem;color:var(--ivory-dim);margin:0 0 6px;display:block;}
+  .field-input{
+    width:100%;background:var(--bg-panel-2);
+    border:1px solid rgba(244,238,221,0.2);color:var(--ivory);
+    padding:11px 14px;border-radius:var(--radius-md);
+    font-size:0.95rem;font-family:'Inter',sans-serif;margin-bottom:12px;
+  }
+  .field-input::placeholder{color:var(--ivory-dim);}
+  .auth-error{
+    font-size:0.82rem;color:#F0B4AE;background:rgba(193,68,59,0.15);
+    border:1px solid rgba(193,68,59,0.4);border-radius:var(--radius-md);
+    padding:9px 12px;margin-bottom:12px;display:none;
+  }
+  .auth-error.show{display:block;}
+  .btn-google{
+    width:100%;display:flex;align-items:center;justify-content:center;gap:10px;
+    background:var(--ivory);color:#1c2624;font-weight:600;
+    border:none;border-radius:var(--radius-md);padding:12px;cursor:pointer;font-size:0.92rem;
+  }
+  .btn-google:hover{background:#e8e2cf;}
+  .auth-hint{font-size:0.78rem;color:var(--ivory-dim);margin:10px 0 0;line-height:1.5;}
+  .auth-loading{text-align:center;color:var(--ivory-dim);font-size:0.9rem;padding:20px 0;}
+  .user-bar{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    margin-bottom:18px;flex-wrap:wrap;
+  }
+  .user-bar .who{font-size:0.88rem;color:var(--ivory-dim);}
+  .user-bar .who b{color:var(--gold-soft);}
+  .user-bar .role-badge{
+    font-size:0.7rem;text-transform:uppercase;letter-spacing:0.04em;
+    background:var(--teal-accent);color:#0B211C;padding:3px 9px;border-radius:999px;
+    font-weight:700;margin-left:6px;
+  }
+  .logout-link{font-size:0.8rem;color:var(--ivory-dim);text-decoration:underline;cursor:pointer;background:none;border:none;}
+
+  .profile-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
   .btn{
     border:none;
     cursor:pointer;
@@ -92,6 +126,7 @@
   .btn-ghost{background:transparent;border:1px solid rgba(244,238,221,0.35);color:var(--ivory);}
   .btn-ghost:hover{background:rgba(244,238,221,0.08);}
   .btn:disabled{opacity:0.45;cursor:not-allowed;}
+  .btn-wide{width:100%;}
 
   .greeting{font-size:0.95rem;color:var(--ivory-dim);margin-bottom:6px;}
   .greeting b{color:var(--gold-soft);}
@@ -161,12 +196,6 @@
   @keyframes pulse{
     0%{transform:scale(0.9);opacity:0.7;}
     100%{transform:scale(1.35);opacity:0;}
-  }
-  .mic-star{
-    position:absolute;inset:-16px;
-    display:flex;align-items:center;justify-content:center;
-    pointer-events:none;
-    opacity:0.55;
   }
   .mic-hint{font-size:0.82rem;color:var(--ivory-dim);text-align:center;}
 
@@ -274,17 +303,44 @@
     Browser ini belum mendukung pengenalan suara Bahasa Arab. Gunakan Google Chrome versi terbaru di desktop atau Android untuk pengalaman penuh. Kamu tetap bisa berlatih membaca, namun skor otomatis tidak akan muncul.
   </div>
 
-  <div id="profile-card" class="card">
-    <div class="profile-row">
-      <input id="name-input" type="text" placeholder="Tulis namamu, misalnya: Fatimah Azzahra" />
-      <button class="btn btn-gold" id="save-name-btn">Mulai berlatih</button>
+  <!-- ===== GERBANG LOGIN ===== -->
+  <div id="auth-gate" class="card">
+    <div class="auth-tabs">
+      <div class="auth-tab active" id="tab-siswa">Saya Siswa (NISN)</div>
+      <div class="auth-tab" id="tab-umum">Saya Umum (Google)</div>
     </div>
+
+    <div class="auth-panel show" id="panel-siswa">
+      <div class="auth-error" id="siswa-error"></div>
+      <label class="field-label">Nomor Induk Siswa Nasional (NISN)</label>
+      <input class="field-input" id="nisn-input" type="text" inputmode="numeric" placeholder="Contoh: 0051234567" />
+      <label class="field-label">Nama Lengkap</label>
+      <input class="field-input" id="nisn-nama-input" type="text" placeholder="Tulis namamu sesuai identitas sekolah" />
+      <button class="btn btn-gold btn-wide" id="nisn-submit-btn">Masuk / Daftar dengan NISN</button>
+      <p class="auth-hint">Pertama kali memasukkan NISN akan otomatis mendaftarkan akunmu dan mengunci NISN tersebut atas namamu. Login berikutnya cukup masukkan NISN yang sama.</p>
+    </div>
+
+    <div class="auth-panel" id="panel-umum">
+      <div class="auth-error" id="umum-error"></div>
+      <button class="btn-google" id="google-signin-btn">
+        <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84c-.21 1.13-.84 2.09-1.8 2.73v2.27h2.92c1.7-1.57 2.68-3.88 2.68-6.64z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.17l-2.92-2.27c-.81.54-1.84.86-3.04.86-2.34 0-4.32-1.58-5.03-3.7H.96v2.34C2.44 15.98 5.48 18 9 18z"/><path fill="#FBBC05" d="M3.97 10.72A5.4 5.4 0 0 1 3.68 9c0-.6.1-1.18.29-1.72V4.94H.96A9 9 0 0 0 0 9c0 1.45.35 2.83.96 4.06l3.01-2.34z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.51.46 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0 5.48 0 2.44 2.02.96 4.94l3.01 2.34C4.68 5.16 6.66 3.58 9 3.58z"/></svg>
+        Masuk dengan Google
+      </button>
+      <p class="auth-hint">Untuk pengguna umum (bukan siswa MAN). Skormu akan tercatat dengan nama akun Google-mu.</p>
+    </div>
+
+    <div class="auth-loading hidden" id="auth-loading">Memproses masuk…</div>
   </div>
 
   <div id="game-area" class="hidden">
 
+    <div class="card user-bar">
+      <div class="who">Masuk sebagai <b id="student-name-display"></b><span class="role-badge" id="role-badge"></span></div>
+      <button class="logout-link" id="logout-btn">Keluar</button>
+    </div>
+
     <div class="card">
-      <p class="greeting">Selamat berlatih, <b id="student-name-display"></b> — pilih kelas dan tema di bawah ini.</p>
+      <p class="greeting">Selamat berlatih — pilih kelas dan tema di bawah ini.</p>
       <div class="level-row" id="category-row"></div>
       <div class="level-row" id="level-row"></div>
       <p class="level-focus" id="level-focus"></p>
@@ -324,12 +380,12 @@
 
     <div class="card">
       <h2 class="section-title">Papan peringkat kelas</h2>
-      <p class="level-focus" id="leaderboard-note"></p>
+      <p class="level-focus" id="leaderboard-note">Papan peringkat ini dibagi ke semua siswa yang membuka aplikasi ini.</p>
       <table class="leaderboard">
         <thead><tr><th>#</th><th>Nama</th><th>Skor terbaik</th><th>Poin</th></tr></thead>
         <tbody id="leaderboard-body"></tbody>
       </table>
-      <button class="reset-link" id="reset-btn">Hapus data latihanku di perangkat ini</button>
+      <button class="reset-link" id="reset-btn">Hapus riwayat latihanku (skor leaderboard tetap tersimpan)</button>
     </div>
 
   </div>
@@ -340,6 +396,10 @@
 
 </div>
 
+<!-- Firebase (Authentication + Realtime Database) -->
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
 <script>
 const CATEGORIES = [
   {
@@ -483,157 +543,163 @@ const CATEGORIES = [
   },
 ];
 let currentCategory = CATEGORIES[0];
-
-let profile = null;
 let currentLevel = CATEGORIES[0].topics[0];
+let currentTextIndex = 0;
 let recognition = null;
 let isListening = false;
 
 // ====================================================================
-// KONFIGURASI PAPAN PERINGKAT BERSAMA (Firebase Realtime Database)
-// ----------------------------------------------------------------------
-// Kosongkan (biarkan '') jika belum ada Firebase -> leaderboard otomatis
-// jadi lokal per-perangkat saja (tidak dibagi ke siswa lain).
-// Isi dengan Database URL dari Firebase Realtime Database untuk membuat
-// leaderboard yang benar-benar dibagi ke seluruh kelas.
-// Contoh: 'https://uji-makhraj-digital-default-rtdb.asia-southeast1.firebasedatabase.app'
+// FIREBASE — GANTI dengan konfigurasi project Anda (bisa pakai project
+// yang sama dengan situs Arabic Class: "arabic-class-manbpn").
 // ====================================================================
-const FIREBASE_DB_URL = 'https://makhraji-default-rtdb.asia-southeast1.firebasedatabase.app';
-
-function sanitizeFirebaseKey(str){
-  return encodeURIComponent(str.trim()).replace(/[.#$/\[\]%]/g, '_');
-}
-
-async function cloudSetLeaderboardEntry(entry){
-  if(!FIREBASE_DB_URL) return false;
-  try{
-    const key = sanitizeFirebaseKey(entry.name);
-    const res = await fetch(FIREBASE_DB_URL + '/leaderboard/' + key + '.json', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(entry)
-    });
-    return res.ok;
-  }catch(e){ return false; }
-}
-
-async function cloudGetLeaderboard(){
-  if(!FIREBASE_DB_URL) return null;
-  try{
-    const res = await fetch(FIREBASE_DB_URL + '/leaderboard.json');
-    if(!res.ok) return null;
-    const data = await res.json();
-    if(!data) return [];
-    return Object.values(data);
-  }catch(e){ return null; }
-}
-
-// Adapter penyimpanan: memakai window.storage jika tersedia (mode Claude),
-// atau localStorage biasa jika dijalankan mandiri (misalnya via GitHub Pages).
-// PENTING: di luar Claude, data "shared" (papan peringkat) hanya tersimpan
-// per-browser/per-perangkat, bukan benar-benar dibagi ke semua siswa,
-// kecuali dihubungkan ke backend nyata.
-const storage = {
-  async get(key, shared){
-    if (window.storage) return window.storage.get(key, shared);
-    const v = localStorage.getItem((shared ? 'shared:' : 'p:') + key);
-    if (v === null) throw new Error('not found');
-    return { key, value: v, shared };
-  },
-  async set(key, value, shared){
-    if (window.storage) return window.storage.set(key, value, shared);
-    localStorage.setItem((shared ? 'shared:' : 'p:') + key, value);
-    return { key, value, shared };
-  },
-  async delete(key, shared){
-    if (window.storage) return window.storage.delete(key, shared);
-    localStorage.removeItem((shared ? 'shared:' : 'p:') + key);
-    return { key, deleted: true, shared };
-  },
-  async list(prefix, shared){
-    if (window.storage) return window.storage.list(prefix, shared);
-    const pfx = (shared ? 'shared:' : 'p:') + (prefix || '');
-    const keys = [];
-    for (let i = 0; i < localStorage.length; i++){
-      const k = localStorage.key(i);
-      if (k.startsWith(pfx)) keys.push(k.slice((shared ? 'shared:' : 'p:').length));
-    }
-    return { keys, prefix, shared };
-  }
+const firebaseConfig = {
+  apiKey: "AIzaSyDDi8odiYL0h2xCsghfNr1EdGd8wXVfidY",
+  authDomain: "arabic-class-manbpn.firebaseapp.com",
+  databaseURL: "https://arabic-class-manbpn-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "arabic-class-manbpn",
+  storageBucket: "arabic-class-manbpn.firebasestorage.app",
+  messagingSenderId: "82009627923",
+  appId: "1:82009627923:web:143877e1c45fcd861c4ee6"
 };
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const rtdb = firebase.database();
+const NISN_DOMAIN = 'siswa.manbpn-arabic.local'; // domain semu untuk akun NISN
+
+let currentUser = null;   // objek firebase auth user
+let profile = null;       // { role, nama, nisn?, uid }
 
 const el = (id) => document.getElementById(id);
 
-function normalizeArabic(str){
-  return str
-    .replace(/[\u064B-\u0652\u0670\u06D6-\u06ED]/g, '')
-    .replace(/[إأآا]/g, 'ا')
-    .replace(/ة/g, 'ه')
-    .replace(/ى/g, 'ي')
-    .replace(/ـ/g, '')
-    .replace(/[^\u0621-\u064A ]/g, '')
-    .replace(/\s+/g, ' ')
-    .trim();
+/* ---------------- TAB LOGIN ---------------- */
+el('tab-siswa').onclick = () => switchAuthTab('siswa');
+el('tab-umum').onclick = () => switchAuthTab('umum');
+function switchAuthTab(which){
+  el('tab-siswa').classList.toggle('active', which==='siswa');
+  el('tab-umum').classList.toggle('active', which==='umum');
+  el('panel-siswa').classList.toggle('show', which==='siswa');
+  el('panel-umum').classList.toggle('show', which==='umum');
 }
 
-function levenshtein(a, b){
-  const m = a.length, n = b.length;
-  const dp = Array.from({length:m+1}, () => new Array(n+1).fill(0));
-  for(let i=0;i<=m;i++) dp[i][0]=i;
-  for(let j=0;j<=n;j++) dp[0][j]=j;
-  for(let i=1;i<=m;i++){
-    for(let j=1;j<=n;j++){
-      if(a[i-1]===b[j-1]) dp[i][j]=dp[i-1][j-1];
-      else dp[i][j]=1+Math.min(dp[i-1][j],dp[i][j-1],dp[i-1][j-1]);
-    }
-  }
-  return dp[m][n];
+function showAuthError(which, msg){
+  const box = which === 'siswa' ? el('siswa-error') : el('umum-error');
+  box.textContent = msg;
+  box.classList.add('show');
+}
+function clearAuthErrors(){
+  el('siswa-error').classList.remove('show');
+  el('umum-error').classList.remove('show');
 }
 
-function similarityScore(target, heard){
-  const t = normalizeArabic(target);
-  const h = normalizeArabic(heard);
-  if(!h) return 0;
-  const dist = levenshtein(t, h);
-  const maxLen = Math.max(t.length, h.length, 1);
-  const pct = Math.max(0, Math.round((1 - dist/maxLen) * 100));
-  return pct;
-}
-
-function scoreTier(pct){
-  if(pct >= 90) return { tier:4, label:'Sangat baik', color:'#3FA98A', detail:'Makhrajmu sudah sangat jelas terbaca mesin.' };
-  if(pct >= 70) return { tier:3, label:'Baik', color:'#D4AF37', detail:'Sudah cukup jelas, perhatikan huruf yang meleset.' };
-  if(pct >= 50) return { tier:2, label:'Cukup', color:'#E9A23B', detail:'Coba lebih pelan dan tegas pada huruf yang sulit.' };
-  return { tier:1, label:'Perlu latihan lagi', color:'#C1443B', detail:'Dengarkan contoh sekali lagi, lalu ulangi perlahan.' };
-}
-
-async function loadProfile(){
-  try{
-    const res = await storage.get('kalam:profile', false);
-    if(res && res.value){
-      profile = JSON.parse(res.value);
-      showGame();
-    }
-  }catch(e){}
-}
-
-async function saveProfileAndStart(){
-  const name = el('name-input').value.trim();
-  if(!name){
-    el('name-input').style.borderColor = '#C1443B';
+/* ---------------- LOGIN NISN ---------------- */
+el('nisn-submit-btn').addEventListener('click', async () => {
+  clearAuthErrors();
+  const nisn = el('nisn-input').value.trim();
+  const nama = el('nisn-nama-input').value.trim();
+  if(!/^\d{6,15}$/.test(nisn)){
+    showAuthError('siswa', 'NISN harus berupa angka (6–15 digit).');
     return;
   }
-  profile = { name };
+  if(!nama){
+    showAuthError('siswa', 'Nama lengkap wajib diisi.');
+    return;
+  }
+  setAuthLoading(true);
+  const pseudoEmail = nisn + '@' + NISN_DOMAIN;
+  const password = 'nisn-' + nisn; // dikombinasikan agar tidak persis NISN mentah
+
   try{
-    await storage.set('kalam:profile', JSON.stringify(profile), false);
-  }catch(e){}
+    // Coba login dulu (siswa lama)
+    const cred = await auth.signInWithEmailAndPassword(pseudoEmail, password);
+    await afterLoginCheckProfile(cred.user, { role:'siswa', nisn, namaInput:nama });
+  }catch(errLogin){
+    if(errLogin.code === 'auth/user-not-found' || errLogin.code === 'auth/invalid-credential'){
+      try{
+        // Belum terdaftar -> daftarkan & kunci NISN ini
+        const cred = await auth.createUserWithEmailAndPassword(pseudoEmail, password);
+        await rtdb.ref('users/' + cred.user.uid).set({
+          role:'siswa', nisn, nama, createdAt: Date.now()
+        });
+        await afterLoginCheckProfile(cred.user, { role:'siswa', nisn, namaInput:nama });
+      }catch(errSignup){
+        setAuthLoading(false);
+        showAuthError('siswa', 'Gagal mendaftar: ' + (errSignup.message || errSignup.code));
+      }
+    }else{
+      setAuthLoading(false);
+      showAuthError('siswa', 'Gagal masuk: ' + (errLogin.message || errLogin.code));
+    }
+  }
+});
+
+/* ---------------- LOGIN GOOGLE ---------------- */
+el('google-signin-btn').addEventListener('click', async () => {
+  clearAuthErrors();
+  setAuthLoading(true);
+  try{
+    const provider = new firebase.auth.GoogleAuthProvider();
+    const cred = await auth.signInWithPopup(provider);
+    await afterLoginCheckProfile(cred.user, { role:'umum', namaInput: cred.user.displayName || 'Pengguna' });
+  }catch(err){
+    setAuthLoading(false);
+    showAuthError('umum', 'Gagal masuk dengan Google: ' + (err.message || err.code));
+  }
+});
+
+function setAuthLoading(v){
+  el('auth-loading').classList.toggle('hidden', !v);
+  el('auth-gate').style.opacity = v ? '0.6' : '1';
+}
+
+async function afterLoginCheckProfile(user, fallback){
+  currentUser = user;
+  let snap;
+  try{
+    snap = await rtdb.ref('users/' + user.uid).get();
+  }catch(e){
+    setAuthLoading(false);
+    showAuthError(fallback.role === 'siswa' ? 'siswa' : 'umum', 'Gagal memuat profil: ' + e.message);
+    return;
+  }
+  if(snap.exists()){
+    const data = snap.val();
+    // Untuk siswa: pastikan NISN yang login memang cocok datanya (sudah pasti karena email = nisn),
+    // tapi kita tetap tampilkan nama yang TERSIMPAN di server (bukan input terbaru),
+    // supaya orang lain tidak bisa "menimpa" nama pemilik NISN asli.
+    profile = { uid: user.uid, role: data.role, nama: data.nama, nisn: data.nisn || null };
+  }else{
+    // Untuk akun Google baru: simpan profil pertama kali
+    profile = { uid: user.uid, role: fallback.role, nama: fallback.namaInput, nisn: fallback.nisn || null };
+    await rtdb.ref('users/' + user.uid).set({
+      role: profile.role, nama: profile.nama, nisn: profile.nisn, email: user.email || null, createdAt: Date.now()
+    });
+  }
+  setAuthLoading(false);
   showGame();
 }
 
+el('logout-btn').addEventListener('click', async () => {
+  await auth.signOut();
+  currentUser = null; profile = null;
+  el('game-area').classList.add('hidden');
+  el('auth-gate').classList.remove('hidden');
+  el('nisn-input').value = ''; el('nisn-nama-input').value = '';
+});
+
+// Pertahankan sesi login antar kunjungan
+auth.onAuthStateChanged(async (user) => {
+  if(user && !profile){
+    setAuthLoading(true);
+    await afterLoginCheckProfile(user, { role:'umum', namaInput: user.displayName || 'Pengguna' });
+  }
+});
+
+/* ---------------- TAMPILAN GAME ---------------- */
 function showGame(){
-  el('profile-card').classList.add('hidden');
+  el('auth-gate').classList.add('hidden');
   el('game-area').classList.remove('hidden');
-  el('student-name-display').textContent = profile.name;
+  el('student-name-display').textContent = profile.nama;
+  el('role-badge').textContent = profile.role === 'siswa' ? ('NISN ' + profile.nisn) : 'UMUM';
   renderCategories();
   selectCategory(CATEGORIES[0]);
   refreshStatsAndLeaderboard();
@@ -650,14 +716,12 @@ function renderCategories(){
     row.appendChild(chip);
   });
 }
-
 function selectCategory(cat){
   currentCategory = cat;
   renderCategories();
   renderLevels();
   selectLevel(cat.topics[0]);
 }
-
 function renderLevels(){
   const row = el('level-row');
   row.innerHTML = '';
@@ -670,9 +734,6 @@ function renderLevels(){
     row.appendChild(chip);
   });
 }
-
-let currentTextIndex = 0;
-
 function selectLevel(lv){
   currentLevel = lv;
   currentTextIndex = 0;
@@ -683,7 +744,6 @@ function selectLevel(lv){
   el('next-sentence-btn').style.display = lv.texts.length > 1 ? 'inline-block' : 'none';
   renderLevels();
 }
-
 function nextSentence(){
   if(!currentLevel || currentLevel.texts.length <= 1) return;
   currentTextIndex = (currentTextIndex + 1) % currentLevel.texts.length;
@@ -691,7 +751,6 @@ function nextSentence(){
   el('transcript-box').textContent = '—';
   el('feedback-block').classList.add('hidden');
 }
-
 function speakExample(){
   if(!('speechSynthesis' in window)){
     alert('Browser ini tidak mendukung suara contoh otomatis.');
@@ -702,6 +761,46 @@ function speakExample(){
   utter.rate = 0.8;
   window.speechSynthesis.cancel();
   window.speechSynthesis.speak(utter);
+}
+
+/* ---------------- PENGENALAN SUARA ---------------- */
+function normalizeArabic(str){
+  return str
+    .replace(/[\u064B-\u0652\u0670\u06D6-\u06ED]/g, '')
+    .replace(/[إأآا]/g, 'ا')
+    .replace(/ة/g, 'ه')
+    .replace(/ى/g, 'ي')
+    .replace(/ـ/g, '')
+    .replace(/[^\u0621-\u064A ]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+function levenshtein(a, b){
+  const m = a.length, n = b.length;
+  const dp = Array.from({length:m+1}, () => new Array(n+1).fill(0));
+  for(let i=0;i<=m;i++) dp[i][0]=i;
+  for(let j=0;j<=n;j++) dp[0][j]=j;
+  for(let i=1;i<=m;i++){
+    for(let j=1;j<=n;j++){
+      if(a[i-1]===b[j-1]) dp[i][j]=dp[i-1][j-1];
+      else dp[i][j]=1+Math.min(dp[i-1][j],dp[i][j-1],dp[i-1][j-1]);
+    }
+  }
+  return dp[m][n];
+}
+function similarityScore(target, heard){
+  const t = normalizeArabic(target);
+  const h = normalizeArabic(heard);
+  if(!h) return 0;
+  const dist = levenshtein(t, h);
+  const maxLen = Math.max(t.length, h.length, 1);
+  return Math.max(0, Math.round((1 - dist/maxLen) * 100));
+}
+function scoreTier(pct){
+  if(pct >= 90) return { tier:4, label:'Sangat baik', color:'#3FA98A', detail:'Makhrajmu sudah sangat jelas terbaca mesin.' };
+  if(pct >= 70) return { tier:3, label:'Baik', color:'#D4AF37', detail:'Sudah cukup jelas, perhatikan huruf yang meleset.' };
+  if(pct >= 50) return { tier:2, label:'Cukup', color:'#E9A23B', detail:'Coba lebih pelan dan tegas pada huruf yang sulit.' };
+  return { tier:1, label:'Perlu latihan lagi', color:'#C1443B', detail:'Dengarkan contoh sekali lagi, lalu ulangi perlahan.' };
 }
 
 function setupRecognition(){
@@ -716,7 +815,6 @@ function setupRecognition(){
   recognition.lang = 'ar-SA';
   recognition.interimResults = true;
   recognition.maxAlternatives = 1;
-
   recognition.onstart = () => {
     isListening = true;
     el('mic-btn').classList.add('listening');
@@ -724,13 +822,9 @@ function setupRecognition(){
   };
   recognition.onresult = (event) => {
     let transcript = '';
-    for(let i=0;i<event.results.length;i++){
-      transcript += event.results[i][0].transcript;
-    }
+    for(let i=0;i<event.results.length;i++) transcript += event.results[i][0].transcript;
     el('transcript-box').textContent = transcript || '—';
-    if(event.results[event.results.length-1].isFinal){
-      handleFinalTranscript(transcript);
-    }
+    if(event.results[event.results.length-1].isFinal) handleFinalTranscript(transcript);
   };
   recognition.onerror = (event) => {
     isListening = false;
@@ -750,7 +844,6 @@ async function handleFinalTranscript(transcript){
   showFeedback(pct, tier);
   await recordAttempt(pct, tier);
 }
-
 function showFeedback(pct, tier){
   const block = el('feedback-block');
   block.classList.remove('hidden');
@@ -761,95 +854,56 @@ function showFeedback(pct, tier){
   el('feedback-detail').textContent = tier.detail;
 }
 
+/* ---------------- SIMPAN RIWAYAT & LEADERBOARD (per akun, via Firebase) ---------------- */
 async function recordAttempt(pct, tier){
   const points = tier.tier * 10 * currentLevel.id;
-  let history = [];
-  try{
-    const res = await storage.get('kalam:history:' + profile.name, false);
-    if(res && res.value) history = JSON.parse(res.value);
-  }catch(e){}
-  history.push({ level: currentLevel.id, pct, points, ts: Date.now() });
-  try{
-    await storage.set('kalam:history:' + profile.name, JSON.stringify(history), false);
-  }catch(e){}
+  await rtdb.ref('kalam_history/' + profile.uid).push({ level: currentLevel.id, pct, points, ts: Date.now() });
 
+  const histSnap = await rtdb.ref('kalam_history/' + profile.uid).get();
+  const history = histSnap.exists() ? Object.values(histSnap.val()) : [];
   const totalPoints = history.reduce((s,a) => s + a.points, 0);
   const bestPct = Math.max(...history.map(a => a.pct));
-  const entry = { name: profile.name, bestPct, totalPoints, attempts: history.length, updatedAt: Date.now() };
 
-  if (FIREBASE_DB_URL){
-    await cloudSetLeaderboardEntry(entry);
-  }else{
-    try{
-      await storage.set('kalam:leaderboard:' + profile.name, JSON.stringify(entry), true);
-    }catch(e){}
-  }
+  await rtdb.ref('leaderboard/' + profile.uid).set({
+    name: profile.nama, role: profile.role, bestPct, totalPoints, attempts: history.length, updatedAt: Date.now()
+  });
 
   refreshStatsAndLeaderboard();
 }
 
 async function refreshStatsAndLeaderboard(){
-  let history = [];
-  try{
-    const res = await storage.get('kalam:history:' + profile.name, false);
-    if(res && res.value) history = JSON.parse(res.value);
-  }catch(e){}
+  const histSnap = await rtdb.ref('kalam_history/' + profile.uid).get();
+  const history = histSnap.exists() ? Object.values(histSnap.val()) : [];
   el('stat-attempts').textContent = history.length;
   el('stat-best').textContent = (history.length ? Math.max(...history.map(a=>a.pct)) : 0) + '%';
   el('stat-points').textContent = history.reduce((s,a)=>s+a.points,0);
 
-  let entries = [];
-  if (FIREBASE_DB_URL){
-    const cloud = await cloudGetLeaderboard();
-    if (cloud) entries = cloud;
-  }else{
-    try{
-      const list = await storage.list('kalam:leaderboard:', true);
-      if(list && list.keys && list.keys.length){
-        for(const key of list.keys){
-          try{
-            const r = await storage.get(key, true);
-            if(r && r.value) entries.push(JSON.parse(r.value));
-          }catch(e){}
-        }
-      }
-    }catch(e){}
-  }
-
+  const lbSnap = await rtdb.ref('leaderboard').get();
+  let entries = lbSnap.exists() ? Object.values(lbSnap.val()) : [];
   entries.sort((a,b) => b.totalPoints - a.totalPoints);
   const tbody = el('leaderboard-body');
   tbody.innerHTML = '';
   entries.slice(0,10).forEach((entry, idx) => {
     const tr = document.createElement('tr');
-    if(entry.name === profile.name) tr.className = 'me';
+    if(entry.name === profile.nama) tr.className = 'me';
     tr.innerHTML = `<td class="rank">${idx+1}</td><td>${entry.name}</td><td>${entry.bestPct}%</td><td>${entry.totalPoints}</td>`;
     tbody.appendChild(tr);
   });
-
-  el('leaderboard-note').textContent = FIREBASE_DB_URL
-    ? 'Papan peringkat ini dibagi ke semua siswa yang membuka aplikasi ini.'
-    : 'Papan peringkat ini masih tersimpan lokal di perangkat ini saja. Sambungkan ke Firebase agar bisa dibagi ke seluruh kelas.';
 }
 
 async function resetMyData(){
-  if(!confirm('Hapus seluruh riwayat latihanmu di perangkat ini? Data papan peringkat tetap tersimpan.')) return;
-  try{
-    await storage.delete('kalam:history:' + profile.name, false);
-    await storage.delete('kalam:profile', false);
-  }catch(e){}
-  location.reload();
+  if(!confirm('Hapus seluruh riwayat latihanmu? Data papan peringkat (skor terbaikmu) tetap tersimpan.')) return;
+  await rtdb.ref('kalam_history/' + profile.uid).remove();
+  refreshStatsAndLeaderboard();
 }
 
-el('save-name-btn').addEventListener('click', saveProfileAndStart);
-el('name-input').addEventListener('keydown', (e) => { if(e.key === 'Enter') saveProfileAndStart(); });
 el('listen-example-btn').addEventListener('click', speakExample);
 el('next-sentence-btn').addEventListener('click', nextSentence);
 el('reset-btn').addEventListener('click', resetMyData);
 el('mic-btn').addEventListener('click', () => {
   if(!recognition) return;
-  if(isListening){
-    recognition.stop();
-  }else{
+  if(isListening){ recognition.stop(); }
+  else{
     el('transcript-box').textContent = '—';
     el('feedback-block').classList.add('hidden');
     try{ recognition.start(); }catch(e){}
@@ -857,7 +911,7 @@ el('mic-btn').addEventListener('click', () => {
 });
 
 setupRecognition();
-loadProfile();
+switchAuthTab('siswa');
 </script>
 
 </body>
